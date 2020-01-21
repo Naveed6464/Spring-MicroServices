@@ -8,9 +8,10 @@ description = 'Microservice with Spring Demo Application By Naveed'
 String mavenArtifactId = name
 String mavenGroupId = 'com.naveed.demo'
 String mavenVersion = '1.0'
-
+ 
 subprojects {
     //apply from: rootProject.file('common.gradle')
+    
     
     buildscript {
         repositories {
