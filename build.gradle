@@ -1,0 +1,65 @@
+import org.gradle.api.artifacts.*
+
+apply plugin: 'base' // To add "clean" task to the root project.
+
+
+description = 'Microservice with Spring Demo Application By Naveed'
+
+String mavenArtifactId = name
+String mavenGroupId = 'com.naveed.demo'
+String mavenVersion = '1.0'
+
+subprojects {
+    //apply from: rootProject.file('common.gradle')
+    
+    buildscript {
+        repositories {
+            maven {
+                url "https://plugins.gradle.org/m2/"
+            }
+        }
+        dependencies {
+            classpath "org.springframework.boot:spring-boot-gradle-plugin:2.2.2.RELEASE"
+        }
+    }
+    
+    apply plugin: 'java'
+    apply plugin: 'maven'
+
+	
+    sourceCompatibility='1.8'
+    targetCompatibility='1.8'
+    
+    [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+    
+    repositories {
+        mavenCentral()
+        mavenLocal()    
+        jcenter()
+    }
+
+    ext.springCloudVersion = "Hoxton.SR1"
+    
+    dependencies {
+        //https://blog.scottlogic.com/2019/10/31/building-microservices-with-spring-boot.html        
+        compile "org.slf4j:slf4j-api:1.7.30",
+                "ch.qos.logback:logback-classic:1.2.3"
+    
+        compileOnly 'org.projectlombok:lombok:1.18.10'
+        annotationProcessor 'org.projectlombok:lombok:1.18.10'
+    }
+}
+
+
+task mergedJavadoc(type: Javadoc, description: 'Creates Javadoc from all the projects.') {
+    title = 'All modules'
+    destinationDir = new File(project.buildDir, 'merged-javadoc')
+
+    // Note: The closures below are executed lazily.
+    source {
+        subprojects*.sourceSets*.main*.allSource
+    }
+    classpath.from {
+        subprojects*.configurations*.compile*.copyRecursive({ !(it instanceof ProjectDependency); })*.resolve()
+    }
+}
